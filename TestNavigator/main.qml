@@ -27,9 +27,55 @@ ApplicationWindow
         }
     }
 
-    function changeCoordinate(textField, mouseGeoPos) 
+    function changeCoordinate(textField, mouseGeoPos)
     {
-        textField.text = qsTr("%1 %2").arg(mouseGeoPos.latitude).arg(mouseGeoPos.longitude);
+        if (mouseGeoPos == null)
+        {
+            textField.text = qsTr("");
+        }
+        else
+        {
+            textField.text = qsTr("%1 %2").arg(mouseGeoPos.latitude).arg(mouseGeoPos.longitude);
+        }
+    }
+
+    function buildRoute()
+    {
+        routeQuery.clearWaypoints();
+
+        if (map.startPoint == null || map.endPoint == null)
+        {
+            return;
+        }
+
+        // add the start and end coords as waypoints on the route
+        routeQuery.addWaypoint(map.startPoint);
+        routeQuery.addWaypoint(map.endPoint);
+        routeQuery.travelModes = RouteQuery.CarTravel;
+        routeQuery.routeOptimizations = RouteQuery.FastestRoute;
+
+        for (var i=0; i<9; i++)
+        {
+            routeQuery.setFeatureWeight(i, 0);
+        }
+
+        routeModel.update();
+
+        // center the map on the start coord
+        map.center = map.startPoint;
+    }
+
+    function clearRoute()
+    {
+        routeQuery.clearWaypoints();
+        routeModel.reset()
+        routeModel.update();
+
+        map.startPoint = null;
+        map.endPoint = null;
+
+        changeCoordinate(mainWindow.startPointTF, null);
+        changeCoordinate(mainWindow.endPointTF, null);
     }
 
     Plugin 
@@ -52,10 +98,12 @@ ApplicationWindow
         property bool choosingStartPoint : false
         property bool choosingEndPoint : false
 
+        property alias routeQuery: routeQuery
+        property alias routeModel: routeModel
+
         MouseArea 
         {
             id: mouseArea
-            property variant lastCoordinate
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
@@ -78,6 +126,38 @@ ApplicationWindow
                 }
             }
         }
+
+        Component
+        {
+            id: routeDelegate
+
+            MapRoute 
+            {
+                id: route
+                route: routeData
+                line.color: "#46a2da"
+                line.width: 5
+                smooth: true
+                opacity: 0.8
+            }
+        }
+
+        RouteModel 
+        {
+            id: routeModel
+            plugin : map.plugin
+            query:  RouteQuery
+            {
+                id: routeQuery
+            }
+        }
+
+        MapItemView 
+        {
+            model: routeModel
+            delegate: routeDelegate
+            autoFitViewport: true
+        }
     }
 
     Column 
@@ -87,7 +167,6 @@ ApplicationWindow
 
         property var startPointTF: startPointTF
         property var endPointTF: endPointTF
-
 
         Button 
         {
@@ -100,6 +179,7 @@ ApplicationWindow
         {
             id: startPointTF
             Layout.fillWidth: true
+            readOnly: true
         }
 
         Button 
@@ -114,6 +194,20 @@ ApplicationWindow
             id: endPointTF
             Layout.fillWidth: true
             readOnly: true
+        }
+
+        Button 
+        {
+            id: buildRouteButton
+            text: qsTr("Build route")
+            onClicked: buildRoute()
+        }
+
+        Button 
+        {
+            id: clearRouteButton
+            text: qsTr("Clear route")
+            onClicked: clearRoute()
         }
     }
 }
