@@ -77,18 +77,6 @@ ApplicationWindow
                     changeCoordinate(mainWindow.endPointTF, mouseGeoPos)
                 }
             }
-
-            onDoubleClicked: 
-            {
-                if (mouse.button === Qt.LeftButton) 
-                {
-                    map.zoomLevel = Math.floor(map.zoomLevel + 1)
-                }
-                else if (mouse.button === Qt.RightButton)
-                {
-                    map.zoomLevel = Math.floor(map.zoomLevel - 1)
-                }
-            }
         }
     }
 
