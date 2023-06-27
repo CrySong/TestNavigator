@@ -34,6 +34,7 @@
     <QtInstall>5.12.12_msvc2017_64</QtInstall>
     <QtModules>quick</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
+    <QtQMakeTemplate>vcapp</QtQMakeTemplate>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>5.12.12_msvc2017_64</QtInstall>
@@ -58,6 +59,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <QtMoc>
+      <ForceInclude>PointsFile.h</ForceInclude>
+    </QtMoc>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -84,8 +94,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PointsFile.cpp" />
     <QtRcc Include="qml.qrc" />
+    <None Include="ControlColumn.qml" />
+    <None Include="cpp.hint" />
     <None Include="main.qml" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="PointsFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -48,7 +48,6 @@ ApplicationWindow
             return;
         }
 
-        // add the start and end coords as waypoints on the route
         routeQuery.addWaypoint(map.startPoint);
         routeQuery.addWaypoint(map.endPoint);
         routeQuery.travelModes = RouteQuery.CarTravel;
@@ -61,7 +60,6 @@ ApplicationWindow
 
         routeModel.update();
 
-        // center the map on the start coord
         map.center = map.startPoint;
     }
 
@@ -76,6 +74,19 @@ ApplicationWindow
 
         changeCoordinate(mainWindow.startPointTF, null);
         changeCoordinate(mainWindow.endPointTF, null);
+    }
+
+    function savePoints()
+    {
+        pointsFile.save(map.startPoint.x, map.startPoint.y, map.endPoint.x, map.endPoint.y);
+    }
+
+    function loadPoints(startX, startY, endX, endY)
+    {
+        map.startPoint = map.toCoordinate(Qt.point(startX, startY));
+        map.endPoint = map.toCoordinate(Qt.point(endX, endY));
+
+        buildRoute();
     }
 
     Plugin 
@@ -157,6 +168,14 @@ ApplicationWindow
             model: routeModel
             delegate: routeDelegate
             autoFitViewport: true
+
+            Component.onCompleted:
+            {
+                if (hasSavedPoints)
+                {
+                    loadPoints(startX, startY, endX, endY);
+                }
+            }
         }
     }
 
@@ -208,6 +227,20 @@ ApplicationWindow
             id: clearRouteButton
             text: qsTr("Clear route")
             onClicked: clearRoute()
+        }
+
+        Button 
+        {
+            id: saveButton
+            text: qsTr("Save points")
+            onClicked: savePoints()
+        }
+
+        Button 
+        {
+            id: loadButton
+            text: qsTr("Load points")
+            onClicked: loadPoints()
         }
     }
 }

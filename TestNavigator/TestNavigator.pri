@@ -7,5 +7,7 @@
 message("You are running qmake on a generated .pro file. This may not work!")
 
 
-SOURCES += ./main.cpp
+HEADERS += ./PointsFile.h
+SOURCES += ./main.cpp \
+    ./PointsFile.cpp
 RESOURCES += qml.qrc
